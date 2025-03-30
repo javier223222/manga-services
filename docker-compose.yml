@@ -1,33 +1,29 @@
 
 
 services:
-  mysql:
-    image: mysql:8
-    container_name: manga-mysql
+  database:
+    image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mangadb
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mangas
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db-data:/var/lib/mysql
 
   manga-service:
     build: .
-    container_name: manga-service
     ports:
-      - "3002:3002"
-    depends_on:
-      - mysql
-    volumes:
-      - .:/app
+      - "3000:3000"
     environment:
-      - DATABASE_URL=mysql://root:password@mysql:3306/mangadb
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-      - JWT_SECRET=${JWT_SECRET}
+      DATABASE_URL: mysql://root:root@database:3306/mangas
+      JWT_SECRET: supersecret
+      CLOUDINARY_CLOUD_NAME: your_cloud_name
+      CLOUDINARY_API_KEY: your_api_key
+      CLOUDINARY_API_SECRET: your_api_secret
+    depends_on:
+      - database
 
 volumes:
-  mysql-data:
+  db-data:
