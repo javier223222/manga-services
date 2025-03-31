@@ -1,10 +1,12 @@
-import { Router } from 'express';
+import { Router } from 'express'; 
 import {
   createChapter,
   getAllChapters,
   getChapterById,
   updateChapter,
   deleteChapter,
+  grantChapterAccess,
+  getChapterWithAccess
 } from '../controllers/chapter.controller';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
@@ -17,7 +19,7 @@ const router = Router();
  *   description: Operaciones sobre capítulos
  */
 
-router.get('/', getAllChapters);
+router.get('/', authMiddleware, getAllChapters);
 
 /**
  * @swagger
@@ -25,6 +27,7 @@ router.get('/', getAllChapters);
  *   get:
  *     summary: Obtener todos los capítulos (paginado)
  *     tags: [Capítulos]
+ *     security: [ { bearerAuth: [] } ]
  *     parameters:
  *       - in: query
  *         name: page
@@ -37,14 +40,15 @@ router.get('/', getAllChapters);
  *         description: Lista paginada de capítulos
  */
 
-router.get('/:id', getChapterById);
+router.get('/:id', authMiddleware, getChapterById);
 
 /**
  * @swagger
  * /chapters/{id}:
  *   get:
- *     summary: Obtener un capítulo por ID
+ *     summary: Obtener un capítulo por ID (solo si es público o pagado)
  *     tags: [Capítulos]
+ *     security: [ { bearerAuth: [] } ]
  *     parameters:
  *       - in: path
  *         name: id
@@ -53,6 +57,8 @@ router.get('/:id', getChapterById);
  *     responses:
  *       200:
  *         description: Capítulo encontrado
+ *       403:
+ *         description: Acceso denegado
  */
 
 router.post('/', authMiddleware, createChapter);
@@ -79,11 +85,13 @@ router.post('/', authMiddleware, createChapter);
  *               title: { type: string }
  *               releaseDate: { type: string, format: date }
  *               pdf: { type: string, format: binary }
+ *               public: { type: boolean }
  *     responses:
  *       201: { description: Capítulo creado }
  */
 
 router.put('/:id', authMiddleware, updateChapter);
+
 /**
  * @swagger
  * /chapters/{id}:
@@ -111,13 +119,17 @@ router.put('/:id', authMiddleware, updateChapter);
  *               releaseDate:
  *                 type: string
  *                 format: date
+ *               public:
+ *                 type: boolean
  *     responses:
  *       200:
  *         description: Capítulo actualizado exitosamente
  *       404:
  *         description: Capítulo no encontrado
  */
+
 router.delete('/:id', authMiddleware, deleteChapter);
+
 /**
  * @swagger
  * /chapters/{id}:
@@ -137,5 +149,47 @@ router.delete('/:id', authMiddleware, deleteChapter);
  *       404:
  *         description: Capítulo no encontrado
  */
+
+/**
+ * @swagger
+ * /chapters/access/grant:
+ *   post:
+ *     summary: Otorgar acceso a un capítulo pagado
+ *     tags: [Capítulos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, chapterId, paymentId]
+ *             properties:
+ *               userId: { type: string }
+ *               chapterId: { type: string }
+ *               paymentId: { type: string }
+ *     responses:
+ *       201: { description: Acceso otorgado }
+ */
+router.post('/access/grant', grantChapterAccess);
+
+/**
+ * @swagger
+ * /chapters/access/{id}:
+ *   get:
+ *     summary: Obtener capítulo solo si el usuario tiene acceso o es público
+ *     tags: [Capítulos]
+ *     security: [ { bearerAuth: [] } ]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Capítulo encontrado
+ *       403:
+ *         description: Acceso denegado
+ */
+router.get('/access/:id', authMiddleware, getChapterWithAccess);
 
 export default router;

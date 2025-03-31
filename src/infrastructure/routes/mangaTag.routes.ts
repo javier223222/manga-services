@@ -33,7 +33,7 @@ const router = Router();
  *       201:
  *         description: Tag asignado
  */
-router.post('/assign', authMiddleware, assignTagToManga);
+router.post('/assign', assignTagToManga);
 
 /**
  * @swagger
@@ -56,7 +56,7 @@ router.post('/assign', authMiddleware, assignTagToManga);
  *       200:
  *         description: Tag eliminado del manga
  */
-router.delete('/remove', authMiddleware, removeTagFromManga);
+router.delete('/remove', removeTagFromManga);
 
 /**
  * @swagger

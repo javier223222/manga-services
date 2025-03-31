@@ -71,7 +71,7 @@ router.get('/:id', getTagById);
  *       201:
  *         description: Etiqueta creada
  */
-router.post('/', authMiddleware, createTag);
+router.post('/', createTag);
 
 /**
  * @swagger

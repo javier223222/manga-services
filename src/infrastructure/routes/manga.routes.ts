@@ -80,7 +80,7 @@ router.get('/:id', getMangaById);
  *         description: Manga encontrado
  */
 
-router.post('/', authMiddleware, createManga);
+router.post('/', createManga);
 
 /**
  * @swagger
@@ -108,7 +108,7 @@ router.post('/', authMiddleware, createManga);
  *       201: { description: Manga creado }
  */
 
-router.put('/:id', authMiddleware, updateManga);
+router.put('/:id', updateManga);
 /**
  * @swagger
  * /mangas/{id}:
@@ -141,7 +141,7 @@ router.put('/:id', authMiddleware, updateManga);
  *       404:
  *         description: Manga no encontrado
  */
-router.delete('/:id', authMiddleware, deleteManga);
+router.delete('/:id',  deleteManga);
 /**
  * @swagger
  * /mangas/{id}:

@@ -19,7 +19,7 @@ model Manga {
   description String
   authorId    String
   genre       String
-  coverUrl    String     // ✅ Imagen de portada
+  coverUrl    String     
   createdAt   DateTime   @default(now())
   tags        MangaTag[]
   chapters    Chapter[]
@@ -30,9 +30,15 @@ model Chapter {
   mangaId     String
   number      Int
   title       String
-  pdfUrl      String   // ✅ Archivo PDF
+  pdfUrl      String   
+  public   Boolean
+
   releaseDate DateTime
+
+
   manga       Manga    @relation(fields: [mangaId], references: [id])
+  chapterAccess ChapterAccess[]
+  
 }
 
 model Tag {
@@ -48,6 +54,17 @@ model MangaTag {
   tag     Tag    @relation(fields: [tagId], references: [id])
   tagId   String
 }
+
+model ChapterAccess {
+  id        String   @id @default(uuid())
+  userId    String
+  chapterId String
+  paymentId String  // ID de la transacción o comprobante
+
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+}
+
+
 
 
 
